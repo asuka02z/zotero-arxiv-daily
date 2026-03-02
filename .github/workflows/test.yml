@@ -6,15 +6,26 @@ jobs:
   calculate-and-send:
     runs-on: ubuntu-latest
     steps:
+      # 1. 修正 Checkout 版本为 v4
       - name: Checkout
-        uses: actions/checkout@v6
-      #  with:
-      #    repository: ${{ vars.REPOSITORY }}
-      #    ref: ${{ vars.REF }}
+        uses: actions/checkout@v4
 
+      # 2. 修正 uv setup 版本为 v5，并开启缓存
       - name: Setup uv
-        uses: astral-sh/setup-uv@v7.1.4
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
 
+      # 3. 显式安装 Python 3.10 (匹配你的 pyproject.toml)
+      - name: Set up Python
+        run: uv python install 3.10
+
+      # 4. 生成锁文件并同步依赖 (因为你删除了 uv.lock，这里需要重新生成)
+      - name: Install dependencies
+        run: |
+          uv lock  # 重新生成 lock 文件
+          uv sync --frozen --all-extras  # 安装依赖
 
       - name: Run script
         env:
@@ -28,7 +39,11 @@ jobs:
           CUSTOM_CONFIG: ${{ vars.CUSTOM_CONFIG }}
         run: |
           export DEBUG=true
+          # 确保 config 目录存在
+          mkdir -p config
           printf "%b\n" "$CUSTOM_CONFIG" > config/custom.yaml
           echo "Use custom config: "
           cat config/custom.yaml
+          
+          # 运行主程序
           uv run src/zotero_arxiv_daily/main.py
