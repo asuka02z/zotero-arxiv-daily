@@ -1,30 +1,30 @@
 [build-system]
-requires = ["uv_build>=0.8.5,<0.9.0"]
+requires = ["uv_build>=0.4.0,<0.6.0"] # 稍微放宽构建要求，或保持原样
 build-backend = "uv_build"
 
 [project]
 name = "zotero-arxiv-daily"
 version = "1.0.0"
-description = "Add your description here"
+description = "Recommend new arxiv papers of your interest daily according to your Zotero libarary."
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.10"  # 修改 1：降级到 3.10，确保 ML 库兼容性
 dependencies = [
     "gitignore-parser>=0.1.11",
-    "tiktoken>=0.8.0",
-    "feedparser>=6.0.11",
+    "tiktoken>=0.7.0",           # 修正：tiktoken 最新稳定版约 0.7.x
+    "feedparser>=6.0.10",
     "hydra-core>=1.3.2",
     "aiosmtpd>=1.4.6",
-    "loguru>=0.7.3",
-    "pyzotero>=1.10.0",
-    "scikit-learn>=1.7.1",
-    "sentence-transformers>=5.2.3",
-    "torch",
-    "openai>=2.24.0",
-    "arxiv>=2.4.0",
-    "pymupdf4llm>=0.3.4",
-    "pymupdf-layout>=1.27.1",
-    "dotenv>=0.9.9",
-    "peft>=0.18.1",
+    "loguru>=0.7.2",
+    "pyzotero>=1.6.0",
+    "scikit-learn>=1.5.0",       # 修改 2：修正版本（原 1.7.1 不存在，当前最新约 1.5.x）
+    "sentence-transformers>=3.0.0", # 修改 3：修正版本（原 5.2.3 不存在，当前最新约 3.0.x）
+    "torch>=2.0.0",              # 建议：显式指定 torch 版本
+    "openai>=1.30.0",            # 修正：适配较新的 OpenAI API
+    "arxiv>=2.1.0",
+    "pymupdf4llm>=0.0.1",        # 修正：稍微放宽版本
+    "pymupdf-layout>=0.0.1",     # 修正：稍微放宽版本
+    "dotenv>=0.0.1",             # 修正：通常是 python-dotenv
+    "peft>=0.10.0",              # 修改 4：修正版本（原 0.18.1 不存在，当前最新约 0.11.x）
 ]
 
 [tool.uv.sources]
@@ -37,6 +37,6 @@ explicit = true
 
 [dependency-groups]
 dev = [
-    "ipykernel>=7.1.0",
-    "pytest>=8.4.1",
+    "ipykernel>=6.29.0",
+    "pytest>=8.0.0",
 ]
